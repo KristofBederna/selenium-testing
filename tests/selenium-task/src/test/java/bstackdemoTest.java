@@ -14,11 +14,14 @@ public class bstackdemoTest {
 
     private static final String BASE_URL = "https://bstackdemo.com/";
 
-    private final By userField = By.id("username");
-    private final By passField = By.id("password");
-    private final By submitBtn = By.cssSelector("button[type='submit']");
-    private final By alertBox = By.id("flash");
-    private final By logoutBtn = By.cssSelector("a.button.secondary.radius");
+    private final By signInLink = By.id("signin");
+    private final By loginButton = By.id("login-btn");
+    private final By loggedInName = By.className("username");
+
+    By optionLocatorUsername = By.xpath(
+            "//div[contains(@class,'option') and normalize-space(text())='username']");
+    By optionLocatorPassword = By.xpath(
+            "//div[contains(@class,'option') and normalize-space(text())='password']");
 
     @Before
     public void init() throws MalformedURLException {
@@ -37,51 +40,114 @@ public class bstackdemoTest {
         driver.get(BASE_URL);
     }
 
+    private void selectDropdownOptionUsername() {
+        find(By.id("username")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocatorUsername));
+        driver.findElement(optionLocatorUsername).click();
+    }
+
+    private void selectDropdownOptionPassword() {
+        find(By.id("password")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocatorPassword));
+        driver.findElement(optionLocatorPassword).click();
+    }
+
     private void performLogin(String username, String password) {
-        find(userField).clear();
-        find(userField).sendKeys(username);
+        find(signInLink).click();
 
-        find(passField).clear();
-        find(passField).sendKeys(password);
+        selectDropdownOptionUsername();
+        selectDropdownOptionPassword();
 
-        find(submitBtn).click();
+        find(loginButton).click();
+    }
+
+    private void performLogout() {
+        find(signInLink).click();
     }
 
     @Test
-    public void shouldLoginSuccessfully() {
+    public void LoginSuccessful() {
         openLoginPage();
-        performLogin("tomsmith", "SuperSecretPassword!");
+        performLogin("demouser", "testingisfun99");
 
-        String message = find(alertBox).getText().trim();
-        System.out.println("Success message: " + message);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInName));
 
-        Assert.assertTrue(message.contains("secure area"));
+        String loggedInUser = find(loggedInName).getText().trim();
+
+        Assert.assertEquals("demouser", loggedInUser);
     }
 
-   @Test
-    public void shouldLogoutAfterLogin() {
-        openLoginPage();
-        performLogin("tomsmith", "SuperSecretPassword!");
-
-        find(logoutBtn).click();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(userField));
-
-        String message = find(alertBox).getText().trim();
-        System.out.println("Logout message: " + message);
-
-        Assert.assertTrue(message.contains("logged out"));
+    private boolean isElementPresent(By locator) {
+        return driver.findElements(locator).size() > 0;
     }
 
     @Test
-    public void shouldRejectInvalidLogin() {
+    public void LogoutSuccessful() {
         openLoginPage();
-        performLogin("invalidUser", "invalidPass");
+        performLogin("demouser", "testingisfun99");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInName));
+        performLogout();
 
-        String message = find(alertBox).getText().trim();
-        System.out.println("Error message: " + message);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(loggedInName));
 
-        Assert.assertTrue(message.contains("invalid"));
+        Assert.assertFalse(isElementPresent(loggedInName));
+    }
+
+    private final By firstItemButton = By.className("shelf-item__buy-btn");
+    private final By checkoutButton = By.className("buy-btn");
+    private final By firstNameInput = By.id("firstNameInput");
+    private final By lastNameInput = By.id("lastNameInput");
+    private final By addressLineInput = By.id("addressLine1Input");
+    private final By provinceInput = By.id("provinceInput");
+    private final By postalCodeInput = By.id("postCodeInput");
+    private final By shippingSubmitButton = By.id("checkout-shipping-continue");
+    private final By continueShoppingButton = By.className("optimizedCheckout-buttonSecondary");
+    private final By ordersLink = By.id("orders");
+    private final By ordersListing = By.className("orders-listing");
+
+    private void enterCheckoutDetails(String firstName, String lastName, String address, String province,
+            String postalCode) {
+        find(firstNameInput).sendKeys(firstName);
+        find(lastNameInput).sendKeys(lastName);
+        find(addressLineInput).sendKeys(address);
+        find(provinceInput).sendKeys(province);
+        find(postalCodeInput).sendKeys(postalCode);
+    }
+
+    @Test
+    public void OrderFirstItem() {
+        openLoginPage();
+        performLogin("demouser", "testingisfun99");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInName));
+
+        find(firstItemButton).click();
+
+        wait.until(ExpectedConditions.elementToBeClickable(checkoutButton));
+        find(checkoutButton).click();
+
+        wait.until(ExpectedConditions.urlContains("checkout"));
+
+        enterCheckoutDetails("John", "Doe", "123 Main St", "California", "12345");
+
+        find(shippingSubmitButton).click();
+
+        wait.until(ExpectedConditions.urlContains("confirmation"));
+        find(continueShoppingButton).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ordersLink));
+        find(ordersLink).click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ordersListing));
+
+        Assert.assertTrue(isElementPresent(ordersListing));
+    }
+
+    @Test
+    public void VerifyPageTitle() {
+        openLoginPage();
+        String expectedTitle = "StackDemo";
+        String actualTitle = driver.getTitle();
+
+        Assert.assertEquals(expectedTitle, actualTitle);
     }
 
     @After

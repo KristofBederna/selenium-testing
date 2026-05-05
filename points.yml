@@ -53,15 +53,15 @@ quality:
 # ----------------------------------------------------------
 basic:
   login_form:                # 3 pts | once
-    done: false
+    done: true
     description: "Fill a simple form and submit it (e.g. login with username and password)"
 
   form_with_user:            # 3 pts | once
-    done: false
+    done: true
     description: "Submit a form that requires a registered/logged-in user"
 
   logout:                    # 2 pts | once
-    done: false
+    done: true
     description: "Log out from the application and verify it"
 
   fill_input:                # 1 pt each | repeatable | max 10
@@ -89,7 +89,7 @@ basic:
     description: "Fill or read the content of a textarea element"
 
   dropdown:                  # 2 pts | once
-    done: false
+    done: true
     description: "Select an option from a drop-down (using Select class or similar)"
     link: "https://www.selenium.dev/documentation/webdriver/support_features/select_lists/"
 
@@ -110,12 +110,12 @@ basic:
     description: "Project has at least 8 Java classes (cumulative with above)"
 
   explicit_wait:             # 3 pts | once
-    done: false
+    done: true
     description: "Use explicit wait (WebDriverWait with ExpectedConditions)"
     link: "https://www.selenium.dev/documentation/webdriver/waits/"
 
   page_title:                # 1 pt | once
-    done: false
+    done: true
     description: "Read and verify the page title using getTitle()"
 
   page_object_pattern:       # 3 pts | once
@@ -207,7 +207,7 @@ advanced:
     link: "https://www.selenium.dev/documentation/webdriver/browsers/"
 
   dockerized_execution:      # 4 pts | once
-    done: false
+    done: true
     description: "Run tests inside a Docker container (e.g. using docker-compose with Selenium Grid)"
     link: "https://www.selenium.dev/documentation/grid/getting_started/"
 
