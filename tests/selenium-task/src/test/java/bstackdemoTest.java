@@ -18,11 +18,6 @@ public class bstackdemoTest {
     private final By loginButton = By.id("login-btn");
     private final By loggedInName = By.className("username");
 
-    By optionLocatorUsername = By.xpath(
-            "//div[contains(@class,'option') and normalize-space(text())='username']");
-    By optionLocatorPassword = By.xpath(
-            "//div[contains(@class,'option') and normalize-space(text())='password']");
-
     @Before
     public void init() throws MalformedURLException {
         ChromeOptions options = new ChromeOptions();
@@ -40,31 +35,41 @@ public class bstackdemoTest {
         driver.get(BASE_URL);
     }
 
-    private void selectDropdownOptionUsername() {
-        find(By.id("username")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocatorUsername));
-        driver.findElement(optionLocatorUsername).click();
-    }
-
-    private void selectDropdownOptionPassword() {
-        find(By.id("password")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocatorPassword));
-        driver.findElement(optionLocatorPassword).click();
-    }
-
     private void performLogin(String username, String password) {
         find(signInLink).click();
-
-        selectDropdownOptionUsername();
-        selectDropdownOptionPassword();
-
+        selectDropdownOptionUsername(username);
+        selectDropdownOptionPassword(password);
         find(loginButton).click();
+    }
+
+    private void selectDropdownOptionUsername(String username) {
+        find(By.id("username")).click();
+        By optionLocator = By.xpath(
+                "//div[contains(@class,'option') and normalize-space(text())='" + username + "']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocator));
+        driver.findElement(optionLocator).click();
+    }
+
+    private void selectDropdownOptionPassword(String password) {
+        find(By.id("password")).click();
+        By optionLocator = By.xpath(
+                "//div[contains(@class,'option') and normalize-space(text())='" + password + "']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocator));
+        driver.findElement(optionLocator).click();
     }
 
     private void performLogout() {
         find(signInLink).click();
     }
 
+    /*
+     * Login test
+     * Explicit wait
+     * Select dropdown options for username and password
+     * Fill input (select) x2 (counts as 1 type)
+     * Submit a form
+     * Complex XPath for dropdown options location x2
+     */
     @Test
     public void LoginSuccessful() {
         openLoginPage();
@@ -81,6 +86,10 @@ public class bstackdemoTest {
         return driver.findElements(locator).size() > 0;
     }
 
+    /*
+     * Logout test
+     * Explicit wait
+     */
     @Test
     public void LogoutSuccessful() {
         openLoginPage();
@@ -114,6 +123,12 @@ public class bstackdemoTest {
         find(postalCodeInput).sendKeys(postalCode);
     }
 
+    /*
+     * Submit a form x1
+     * Fill input (text) x5 (counts as 1 type)
+     * Submit a form after login
+     * Explicit wait
+     */
     @Test
     public void OrderFirstItem() {
         openLoginPage();
@@ -141,6 +156,7 @@ public class bstackdemoTest {
         Assert.assertTrue(isElementPresent(ordersListing));
     }
 
+    // Page title test
     @Test
     public void VerifyPageTitle() {
         openLoginPage();
@@ -148,6 +164,13 @@ public class bstackdemoTest {
         String actualTitle = driver.getTitle();
 
         Assert.assertEquals(expectedTitle, actualTitle);
+    }
+
+    // Static page test
+    @Test
+    public void VerifyElementVisibility() {
+        openLoginPage();
+        Assert.assertTrue(isElementPresent(signInLink));
     }
 
     @After
