@@ -3,15 +3,31 @@ import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.*;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 public class bstackdemoTest extends BasePage {
     @Before
     public void init() throws MalformedURLException {
+        String downloadPath = "/tmp/downloads";
+        new File(downloadPath).mkdirs();
+
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("download.default_directory", downloadPath);
+        prefs.put("download.prompt_for_download", false);
+
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--window-size=1920,1080");
+        // options.addArguments("--headless=new"); // headless_execution
+        // (TODO: enable when headless mode when noVCN is no longer needed)
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.setExperimentalOption("prefs", prefs); // needed for downloads
+
         driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
-        driver.manage().window().maximize();
         wait = new WebDriverWait(driver, 10);
     }
 

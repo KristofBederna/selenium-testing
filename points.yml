@@ -30,19 +30,19 @@ ai_usage:
 # ----------------------------------------------------------
 quality:
   gitignore: # required for grade 2+
-    done: false
+    done: true
     description: "Unnecessary files are ignored (.gitignore covers build output, IDE files, etc.)"
 
   structured_code: # required for grade 3+
-    done: false
+    done: true
     description: "Code is organized into classes and functions, not one big file"
 
   readable_code: # required for grade 4+
-    done: false
+    done: true
     description: "Function and method names describe what they do, test suite reads like a test description"
 
   low_redundancy: # required for grade 5
-    done: false
+    done: true
     description: "Minimal code duplication, shared logic is extracted into reusable methods"
 
 # ----------------------------------------------------------
@@ -125,7 +125,7 @@ basic:
     description: "Create a BasePage class that other page classes extend"
 
   readable_tests: # 3 pts | once
-    done: false
+    done: true
     description: "Test methods have descriptive names so the suite reads like a test specification"
 
 # ----------------------------------------------------------
@@ -133,7 +133,7 @@ basic:
 # ----------------------------------------------------------
 advanced:
   webdriver_config: # 4 pts | once
-    done: false
+    done: true
     description: "Configure WebDriver with custom options (e.g. ChromeOptions, window size, user agent)"
     link: "https://www.selenium.dev/documentation/webdriver/drivers/options/"
 
@@ -194,7 +194,7 @@ advanced:
     link: "https://www.browserstack.com/guide/take-screenshots-in-selenium"
 
   headless_execution: # 4 pts | once
-    done: false
+    done: true
     description: "Run tests in headless mode (browser without visible UI)"
     link: "https://www.selenium.dev/documentation/webdriver/browsers/chrome/"
 
