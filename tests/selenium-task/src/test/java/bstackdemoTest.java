@@ -27,8 +27,7 @@ public class bstackdemoTest extends BasePage {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--window-size=1920,1080");
-        // options.addArguments("--headless=new"); // headless_execution
-        // (TODO: enable when headless mode when noVCN is no longer needed)
+        options.addArguments("--headless=new"); // headless_execution
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.setExperimentalOption("prefs", prefs); // needed for downloads
