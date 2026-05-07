@@ -158,7 +158,7 @@ advanced:
     link: "https://www.selenium.dev/documentation/webdriver/elements/file_upload/"
 
   history_test: # 4 pts | once
-    done: false
+    done: true
     description: "Test browser history navigation (e.g. back(), forward())"
     link: "https://www.selenium.dev/documentation/webdriver/interactions/navigation/"
 

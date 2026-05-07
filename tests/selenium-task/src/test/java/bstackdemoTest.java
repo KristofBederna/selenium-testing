@@ -35,7 +35,8 @@ public class bstackdemoTest extends BasePage {
      * * Login test * Explicit wait * Select dropdown options for username and
      * password * Fill input (select) x2 (counts as 1 type) * Submit a form *
      * Complex XPath for dropdown options location x2
-     */ @Test
+     */
+    @Test
     public void LoginSuccessful() {
         openPage();
         HomePage home = new HomePage(driver, wait);
@@ -99,6 +100,24 @@ public class bstackdemoTest extends BasePage {
         openPage();
         HomePage home = new HomePage(driver, wait);
         Assert.assertTrue(isElementPresent(home.getSignInLink()));
+    }
+
+    // History test: navigate to orders, then back and verify URL (orders page
+    // requires login, so it should redirect to sign in page)
+    @Test
+    public void GoToLoginAndNavigateBack() {
+        openPage();
+
+        HomePage home = new HomePage(driver, wait);
+
+        home.goToOrders();
+
+        wait.until(ExpectedConditions.urlToBe("https://bstackdemo.com/signin?orders=true"));
+        Assert.assertTrue("https://bstackdemo.com/signin?orders=true".equals(driver.getCurrentUrl()));
+        driver.navigate().back();
+
+        wait.until(ExpectedConditions.urlToBe("https://bstackdemo.com/"));
+        Assert.assertTrue("https://bstackdemo.com/".equals(driver.getCurrentUrl()));
     }
 
     @After
