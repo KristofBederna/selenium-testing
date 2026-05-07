@@ -1,5 +1,6 @@
 import org.junit.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.*;
@@ -181,6 +182,37 @@ public class bstackdemoTest extends BasePage {
         String colorAfter = addToCartBtn.getCssValue("background-color");
 
         Assert.assertNotEquals(colorBefore, colorAfter);
+    }
+
+    /*
+     * Cookie manipulation test
+     * JavaScript executor test
+     */
+    @Test
+    public void SaveUserNameToCookiesAndReload() {
+        openPage();
+
+        Cookie testCookie = new Cookie.Builder("test-user", "demouser")
+                .domain("bstackdemo.com")
+                .path("/")
+                .build();
+        driver.manage().addCookie(testCookie);
+
+        Cookie retrieved = driver.manage().getCookieNamed("test-user");
+        Assert.assertNotNull("Cookie was not set", retrieved);
+        Assert.assertEquals("demouser", retrieved.getValue());
+
+        ((JavascriptExecutor) driver).executeScript(
+                "sessionStorage.setItem('username', arguments[0]);", retrieved.getValue());
+
+        driver.navigate().refresh();
+
+        HomePage home = new HomePage(driver, wait);
+        String loggedInUser = home.getLoggedInUser();
+        Assert.assertEquals(retrieved.getValue(), loggedInUser);
+
+        driver.manage().deleteCookieNamed("test-user");
+        Assert.assertNull(driver.manage().getCookieNamed("test-user"));
     }
 
     @After

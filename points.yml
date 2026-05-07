@@ -138,7 +138,7 @@ advanced:
     link: "https://www.selenium.dev/documentation/webdriver/drivers/options/"
 
   cookie_manipulation: # 6 pts | once
-    done: false
+    done: true
     description: "Manipulate cookies meaningfully (e.g. add/delete/read cookies, skip consent popup)"
     link: "https://www.selenium.dev/documentation/webdriver/interactions/cookies/"
 
