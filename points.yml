@@ -176,7 +176,7 @@ advanced:
     description: "Generate random test data (e.g. random username, email) and use it in a test"
 
   download_files: # 12 pts | once
-    done: false
+    done: true
     description: "Download one or more files to a folder and verify they were saved"
 
   config_file: # 6 pts | once

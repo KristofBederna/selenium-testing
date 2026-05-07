@@ -5,6 +5,8 @@ services:
     image: selenium/standalone-chrome:latest
     container_name: docker-sandbox-selenium
     shm_size: 2gb
+    volumes:
+      - ./downloads:/downloads
     environment:
       - LANG=C.UTF-8
       - LC_ALL=C.UTF-8
@@ -27,5 +29,6 @@ services:
     tty: true
     volumes:
       - ./tests:/home/selenium/tests
+      - ./downloads:/downloads
     depends_on:
       - selenium

@@ -18,21 +18,28 @@ import java.net.MalformedURLException;
 public class bstackdemoTest extends BasePage {
     @Before
     public void init() throws MalformedURLException {
+
         String downloadPath = ConfigReader.get("download.path");
         new File(downloadPath).mkdirs();
 
         Map<String, Object> prefs = new HashMap<>();
-        prefs.put("download.default_directory", downloadPath);
         prefs.put("download.prompt_for_download", false);
-
+        prefs.put("download.default_directory", downloadPath);
+        prefs.put("download.directory_upgrade", true);
+        prefs.put("plugins.always_open_pdf_externally", true);
+        prefs.put("safebrowsing.enabled", false);
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--window-size=1920,1080");
-        options.addArguments("--headless=new"); // headless_execution
+        options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
-        options.setExperimentalOption("prefs", prefs); // needed for downloads
 
-        driver = new RemoteWebDriver(new URL(ConfigReader.get("grid.url")), options);
+        options.setExperimentalOption("prefs", prefs);
+
+        driver = new RemoteWebDriver(
+                new URL(ConfigReader.get("grid.url")),
+                options);
+
         wait = new WebDriverWait(driver, 10);
     }
 
@@ -74,6 +81,7 @@ public class bstackdemoTest extends BasePage {
      * Submit a form after login
      * Explicit wait
      * Random data
+     * Download a file and verify its existence
      */
     @Test
     public void OrderFirstItem() {
@@ -86,7 +94,6 @@ public class bstackdemoTest extends BasePage {
 
         home.addFirstItemToCart();
 
-        // Generate random checkout data
         String randomFirst = "User" + UUID.randomUUID().toString().substring(0, 5);
         String randomLast = "Test" + UUID.randomUUID().toString().substring(0, 5);
         String randomAddress = UUID.randomUUID().toString().substring(0, 8) + " Main St";
@@ -98,6 +105,26 @@ public class bstackdemoTest extends BasePage {
                 randomFirst, randomLast,
                 randomAddress, randomProvince,
                 randomPostal);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        WebElement downloadBtn = find(confirmation.getDownloadPDF());
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", downloadBtn);
+
+        boolean isDownloaded = waitForFile(ConfigReader.get("download.path"), 15);
+        Assert.assertTrue(isDownloaded);
+
+        File dir = new File(ConfigReader.get("download.path"));
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".pdf"));
+        if (files != null) {
+            for (File file : files) {
+                file.delete();
+            }
+        }
 
         home = confirmation.continueShopping();
         OrdersPage orders = home.goToOrders();
@@ -212,6 +239,20 @@ public class bstackdemoTest extends BasePage {
 
         driver.manage().deleteCookieNamed("test-user");
         Assert.assertNull(driver.manage().getCookieNamed("test-user"));
+    }
+
+    public boolean waitForFile(String downloadPath, int timeoutSec) {
+        for (int i = 0; i < timeoutSec; i++) {
+            File dir = new File(downloadPath);
+            File[] files = dir.listFiles((d, name) -> name.endsWith(".pdf") && !name.endsWith(".crdownload"));
+            if (files != null && files.length > 0)
+                return true;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        return false;
     }
 
     @After
