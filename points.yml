@@ -172,7 +172,7 @@ advanced:
     description: "Verify an e-mail was sent (e.g. registration activation link, password reset)"
 
   random_data: # 8 pts | once
-    done: false
+    done: true
     description: "Generate random test data (e.g. random username, email) and use it in a test"
 
   download_files: # 12 pts | once
@@ -180,7 +180,7 @@ advanced:
     description: "Download one or more files to a folder and verify they were saved"
 
   config_file: # 6 pts | once
-    done: false
+    done: true
     description: "Store test settings in an external file (e.g. .properties, .yml, or .env) and read them at runtime — things like base URL, username, password, browser type. No hardcoded values in your test code"
 
   javascript_executor: # 4 pts | once

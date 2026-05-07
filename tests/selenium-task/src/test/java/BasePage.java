@@ -7,7 +7,7 @@ public class BasePage {
     protected WebDriver driver;
     protected WebDriverWait wait;
 
-    private static final String BASE_URL = "https://bstackdemo.com/";
+    private static final String BASE_URL = ConfigReader.get("base.url");
 
     public BasePage() {
     }

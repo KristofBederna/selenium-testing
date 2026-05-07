@@ -1,5 +1,4 @@
 import org.junit.*;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.*;
@@ -9,13 +8,14 @@ import org.openqa.selenium.support.ui.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 public class bstackdemoTest extends BasePage {
     @Before
     public void init() throws MalformedURLException {
-        String downloadPath = "/tmp/downloads";
+        String downloadPath = ConfigReader.get("download.path");
         new File(downloadPath).mkdirs();
 
         Map<String, Object> prefs = new HashMap<>();
@@ -30,7 +30,7 @@ public class bstackdemoTest extends BasePage {
         options.addArguments("--disable-dev-shm-usage");
         options.setExperimentalOption("prefs", prefs); // needed for downloads
 
-        driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
+        driver = new RemoteWebDriver(new URL(ConfigReader.get("grid.url")), options);
         wait = new WebDriverWait(driver, 10);
     }
 
@@ -44,9 +44,9 @@ public class bstackdemoTest extends BasePage {
         openPage();
         HomePage home = new HomePage(driver, wait);
         SignInPage signInPage = home.goToSignIn();
-        signInPage.login("demouser", "testingisfun99");
+        signInPage.login(ConfigReader.get("username"), ConfigReader.get("password"));
         String loggedInUser = home.getLoggedInUser();
-        Assert.assertEquals("demouser", loggedInUser);
+        Assert.assertEquals(ConfigReader.get("username"), loggedInUser);
     }
 
     /* * Logout test * Explicit wait */
@@ -55,7 +55,7 @@ public class bstackdemoTest extends BasePage {
         openPage();
         HomePage home = new HomePage(driver, wait);
         SignInPage signInPage = home.goToSignIn();
-        signInPage.login("demouser", "testingisfun99");
+        signInPage.login(ConfigReader.get("username"), ConfigReader.get("password"));
         home.performLogout();
         Assert.assertTrue(find(home.getSignInLink()).getText().trim().equals("Sign In"));
     }
@@ -65,6 +65,7 @@ public class bstackdemoTest extends BasePage {
      * Fill input (text) x5 (counts as 1 type)
      * Submit a form after login
      * Explicit wait
+     * Random data
      */
     @Test
     public void OrderFirstItem() {
@@ -73,13 +74,22 @@ public class bstackdemoTest extends BasePage {
         HomePage home = new HomePage(driver, wait);
 
         home = home.goToSignIn()
-                .login("demouser", "testingisfun99");
+                .login(ConfigReader.get("username"), ConfigReader.get("password"));
 
         home.addFirstItemToCart();
 
+        // Generate random checkout data
+        String randomFirst = "User" + UUID.randomUUID().toString().substring(0, 5);
+        String randomLast = "Test" + UUID.randomUUID().toString().substring(0, 5);
+        String randomAddress = UUID.randomUUID().toString().substring(0, 8) + " Main St";
+        String randomProvince = "Province" + UUID.randomUUID().toString().substring(0, 5);
+        String randomPostal = String.valueOf((int) (Math.random() * 90000) + 10000);
+
         CheckoutPage checkout = home.goToCheckout();
         ConfirmationPage confirmation = checkout.fillForm(
-                "John", "Doe", "123 Main St", "California", "12345");
+                randomFirst, randomLast,
+                randomAddress, randomProvince,
+                randomPostal);
 
         home = confirmation.continueShopping();
         OrdersPage orders = home.goToOrders();
@@ -91,7 +101,7 @@ public class bstackdemoTest extends BasePage {
     @Test
     public void VerifyPageTitle() {
         openPage();
-        String expectedTitle = "StackDemo";
+        String expectedTitle = ConfigReader.get("page.title");
         String actualTitle = driver.getTitle();
 
         Assert.assertEquals(expectedTitle, actualTitle);
@@ -115,12 +125,12 @@ public class bstackdemoTest extends BasePage {
 
         home.goToOrders();
 
-        wait.until(ExpectedConditions.urlToBe("https://bstackdemo.com/signin?orders=true"));
-        Assert.assertTrue("https://bstackdemo.com/signin?orders=true".equals(driver.getCurrentUrl()));
+        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("signin.url")));
+        Assert.assertTrue(ConfigReader.get("signin.url").equals(driver.getCurrentUrl()));
         driver.navigate().back();
 
-        wait.until(ExpectedConditions.urlToBe("https://bstackdemo.com/"));
-        Assert.assertTrue("https://bstackdemo.com/".equals(driver.getCurrentUrl()));
+        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("base.url")));
+        Assert.assertTrue(ConfigReader.get("base.url").equals(driver.getCurrentUrl()));
     }
 
     // JavaScript executor test
@@ -128,15 +138,15 @@ public class bstackdemoTest extends BasePage {
     public void ScrollToFooterOnEmptyFavoritesAndVerifyItsVisibility() {
         openPage();
         HomePage home = new HomePage(driver, wait);
-        home.goToSignIn().login("demouser", "testingisfun99");
+        home.goToSignIn().login(ConfigReader.get("username"), ConfigReader.get("password"));
 
-        home.goToFavorites();
+        FavoritesPage favorites = home.goToFavorites();
 
         wait.until(ExpectedConditions.urlContains("favourites"));
 
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
-        WebElement footerElement = find(By.id("custom-footer"));
+        WebElement footerElement = favorites.getFooterElement();
         boolean isVisible = (Boolean) ((JavascriptExecutor) driver).executeScript(
                 "var rect = arguments[0].getBoundingClientRect();" +
                         "return rect.top >= 0 && rect.bottom <= window.innerHeight;",
