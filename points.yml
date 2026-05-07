@@ -78,7 +78,7 @@ basic:
     description: "Define an array of URLs or page data, iterate over them and verify something on each page (e.g. check title or a specific element on 5 different pages using a loop)"
 
   complex_xpath: # 1 pt each | repeatable | max 10
-    count: 2
+    count: 3
     description: "Use a complex XPath expression (e.g. //div[@class='content']//a[contains(@href,'profile')])"
 
   textarea: # 1 pt | once
@@ -143,7 +143,7 @@ advanced:
     link: "https://www.selenium.dev/documentation/webdriver/interactions/cookies/"
 
   hover_test: # 6 pts | once
-    done: false
+    done: true
     description: "Perform a hover (mouse over) action and verify the result"
     link: "https://www.selenium.dev/documentation/webdriver/actions_api/mouse/"
 

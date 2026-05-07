@@ -33,6 +33,10 @@ public class HomePage extends BasePage {
         find(firstItemButton).click();
     }
 
+    public WebElement getFirstItemButton() {
+        return find(firstItemButton);
+    }
+
     public CheckoutPage goToCheckout() {
         find(checkoutButton).click();
         return new CheckoutPage(driver, wait);

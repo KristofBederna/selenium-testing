@@ -1,7 +1,9 @@
 import org.junit.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.*;
 
@@ -35,8 +37,11 @@ public class bstackdemoTest extends BasePage {
     }
 
     /*
-     * * Login test * Explicit wait * Select dropdown options for username and
-     * password * Fill input (select) x2 (counts as 1 type) * Submit a form *
+     * Login test
+     * Explicit wait
+     * Select dropdown options for username and password
+     * Fill input (select) x2 (counts as 1 type)
+     * Submit a form
      * Complex XPath for dropdown options location x2
      */
     @Test
@@ -49,7 +54,10 @@ public class bstackdemoTest extends BasePage {
         Assert.assertEquals(ConfigReader.get("username"), loggedInUser);
     }
 
-    /* * Logout test * Explicit wait */
+    /*
+     * Logout test
+     * Explicit wait
+     */
     @Test
     public void LogoutSuccessful() {
         openPage();
@@ -152,7 +160,27 @@ public class bstackdemoTest extends BasePage {
                         "return rect.top >= 0 && rect.bottom <= window.innerHeight;",
                 footerElement);
 
-        Assert.assertTrue("Footer is not visible after scrolling", isVisible);
+        Assert.assertTrue(isVisible);
+    }
+
+    /*
+     * Hover test
+     * Complex XPath x1
+     */
+    @Test
+    public void HoverChangesAddToCartButtonColor() {
+        openPage();
+
+        WebElement shelfItem = find(By.xpath("//div[@class='shelf-item' and @data-sku]"));
+        WebElement addToCartBtn = shelfItem.findElement(By.className("shelf-item__buy-btn"));
+
+        String colorBefore = addToCartBtn.getCssValue("background-color");
+
+        new Actions(driver).moveToElement(shelfItem).perform();
+
+        String colorAfter = addToCartBtn.getCssValue("background-color");
+
+        Assert.assertNotEquals(colorBefore, colorAfter);
     }
 
     @After
