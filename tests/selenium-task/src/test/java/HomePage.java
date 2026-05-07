@@ -9,6 +9,7 @@ public class HomePage extends BasePage {
     private By checkoutButton = By.className("buy-btn");
     private By ordersLink = By.id("orders");
     private final By loggedInName = By.className("username");
+    private By favoritesLink = By.id("favourites");
 
     public HomePage(WebDriver driver, WebDriverWait wait) {
         super(driver, wait);
@@ -44,5 +45,10 @@ public class HomePage extends BasePage {
 
     public By getSignInLink() {
         return signInLink;
+    }
+
+    public FavoritesPage goToFavorites() {
+        find(favoritesLink).click();
+        return new FavoritesPage(driver, wait);
     }
 }

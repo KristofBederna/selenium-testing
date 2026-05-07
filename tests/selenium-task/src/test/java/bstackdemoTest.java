@@ -1,4 +1,7 @@
 import org.junit.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.*;
@@ -118,6 +121,28 @@ public class bstackdemoTest extends BasePage {
 
         wait.until(ExpectedConditions.urlToBe("https://bstackdemo.com/"));
         Assert.assertTrue("https://bstackdemo.com/".equals(driver.getCurrentUrl()));
+    }
+
+    // JavaScript executor test
+    @Test
+    public void ScrollToFooterOnEmptyFavoritesAndVerifyItsVisibility() {
+        openPage();
+        HomePage home = new HomePage(driver, wait);
+        home.goToSignIn().login("demouser", "testingisfun99");
+
+        home.goToFavorites();
+
+        wait.until(ExpectedConditions.urlContains("favourites"));
+
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
+
+        WebElement footerElement = find(By.id("custom-footer"));
+        boolean isVisible = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                "var rect = arguments[0].getBoundingClientRect();" +
+                        "return rect.top >= 0 && rect.bottom <= window.innerHeight;",
+                footerElement);
+
+        Assert.assertTrue("Footer is not visible after scrolling", isVisible);
     }
 
     @After
