@@ -28,9 +28,10 @@ public class bstackdemoTest extends BasePage {
         prefs.put("download.directory_upgrade", true);
         prefs.put("plugins.always_open_pdf_externally", true);
         prefs.put("safebrowsing.enabled", false);
+
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--window-size=1920,1080");
-        options.addArguments("--headless=new");
+        // options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
 
@@ -84,7 +85,7 @@ public class bstackdemoTest extends BasePage {
      * Download a file and verify its existence
      */
     @Test
-    public void OrderFirstItem() {
+    public void CompleteOrderProcessVerification() {
         openPage();
 
         HomePage home = new HomePage(driver, wait);
@@ -132,6 +133,28 @@ public class bstackdemoTest extends BasePage {
         Assert.assertTrue(orders.hasOrders());
     }
 
+    /*
+     * Complex XPath x1
+     * Radio button or checkbox test (favorite button is a toggle button)
+     */
+    @Test
+    public void VerifyAddToFavorites() {
+        openPage();
+
+        HomePage home = new HomePage(driver, wait);
+
+        home = home.goToSignIn()
+                .login(ConfigReader.get("username"), ConfigReader.get("password"));
+
+        home.addFirstItemToFavorites();
+
+        FavoritesPage favorites = home.goToFavorites();
+
+        wait.until(ExpectedConditions.urlContains("favourites"));
+
+        Assert.assertTrue(favorites.hasFavorites());
+    }
+
     // Page title test
     @Test
     public void VerifyPageTitle() {
@@ -144,7 +167,7 @@ public class bstackdemoTest extends BasePage {
 
     // Static page test
     @Test
-    public void VerifyElementVisibility() {
+    public void VerifyVisibilityOfSignInLinkOnHomePage() {
         openPage();
         HomePage home = new HomePage(driver, wait);
         Assert.assertTrue(isElementPresent(home.getSignInLink()));
@@ -153,7 +176,7 @@ public class bstackdemoTest extends BasePage {
     // History test: navigate to orders, then back and verify URL (orders page
     // requires login, so it should redirect to sign in page)
     @Test
-    public void GoToLoginAndNavigateBack() {
+    public void GoToLoginAndNavigateBackVerifyURL() {
         openPage();
 
         HomePage home = new HomePage(driver, wait);
@@ -215,7 +238,7 @@ public class bstackdemoTest extends BasePage {
      * JavaScript executor test
      */
     @Test
-    public void SaveUserNameToCookiesAndReload() {
+    public void SaveUserNameToCookiesAndReloadThenDeleteCookies() {
         openPage();
 
         Cookie testCookie = new Cookie.Builder("test-user", "demouser")
@@ -241,18 +264,27 @@ public class bstackdemoTest extends BasePage {
         Assert.assertNull(driver.manage().getCookieNamed("test-user"));
     }
 
-    public boolean waitForFile(String downloadPath, int timeoutSec) {
-        for (int i = 0; i < timeoutSec; i++) {
-            File dir = new File(downloadPath);
-            File[] files = dir.listFiles((d, name) -> name.endsWith(".pdf") && !name.endsWith(".crdownload"));
-            if (files != null && files.length > 0)
-                return true;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
-        }
-        return false;
+    /*
+     * Complex XPath x1
+     */
+    @Test
+    public void VerifyGeolocationIsNeededForOffers() {
+        openPage();
+
+        HomePage home = new HomePage(driver, wait);
+        home.goToSignIn().login(ConfigReader.get("username"), ConfigReader.get("password"));
+
+        OffersPage offers = home.goToOffers();
+        wait.until(ExpectedConditions.urlContains("offers"));
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                offers.getLocationBasedOffer()));
+
+        String offerText = offers.getLocationBasedOfferText();
+
+        Assert.assertTrue(
+                offerText.equals("Sorry we do not have any promotional offers in your city.")
+                        || offerText.equals("We've promotional offers in your location."));
     }
 
     @After

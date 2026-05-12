@@ -62,7 +62,7 @@ basic:
     description: "Log out from the application and verify it"
 
   fill_input: # 1 pt each | repeatable | max 10
-    count: 2
+    count: 3
     description: "Fill an input field (text, radio, checkbox, date, etc.) — each different type counts as one"
 
   send_form: # 1 pt each | repeatable | max 10
@@ -78,7 +78,7 @@ basic:
     description: "Define an array of URLs or page data, iterate over them and verify something on each page (e.g. check title or a specific element on 5 different pages using a loop)"
 
   complex_xpath: # 1 pt each | repeatable | max 10
-    count: 3
+    count: 5
     description: "Use a complex XPath expression (e.g. //div[@class='content']//a[contains(@href,'profile')])"
 
   textarea: # 1 pt | once
@@ -91,7 +91,7 @@ basic:
     link: "https://www.selenium.dev/documentation/webdriver/support_features/select_lists/"
 
   radio_button: # 1 pt | once
-    done: false
+    done: true
     description: "Select or verify a radio button"
 
   at_least_4_classes: # 3 pts | once

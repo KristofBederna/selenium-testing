@@ -10,6 +10,7 @@ public class HomePage extends BasePage {
     private By ordersLink = By.id("orders");
     private final By loggedInName = By.className("username");
     private By favoritesLink = By.id("favourites");
+    private By offersLink = By.id("offers");
 
     public HomePage(WebDriver driver, WebDriverWait wait) {
         super(driver, wait);
@@ -51,8 +52,18 @@ public class HomePage extends BasePage {
         return signInLink;
     }
 
+    public void addFirstItemToFavorites() {
+        WebElement firstItemFavoriteButton = find(By.xpath("//*[@id=\"1\"]/div[1]/button"));
+        firstItemFavoriteButton.click();
+    }
+
     public FavoritesPage goToFavorites() {
         find(favoritesLink).click();
         return new FavoritesPage(driver, wait);
+    }
+
+    public OffersPage goToOffers() {
+        find(offersLink).click();
+        return new OffersPage(driver, wait);
     }
 }
