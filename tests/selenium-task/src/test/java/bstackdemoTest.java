@@ -31,7 +31,7 @@ public class bstackdemoTest extends BasePage {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--window-size=1920,1080");
-        // options.addArguments("--headless=new");
+        options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
 
@@ -44,6 +44,24 @@ public class bstackdemoTest extends BasePage {
         wait = new WebDriverWait(driver, 10);
     }
 
+    // Page title test
+    @Test
+    public void shouldDisplayCorrectPageTitle() {
+        openPage();
+        String expectedTitle = ConfigReader.get("page.title");
+        String actualTitle = driver.getTitle();
+
+        Assert.assertEquals(expectedTitle, actualTitle);
+    }
+
+    // Static page test
+    @Test
+    public void shouldShowSignInLinkOnHomePage() {
+        openPage();
+        HomePage home = new HomePage(driver, wait);
+        Assert.assertTrue(isElementPresent(home.getSignInLink()));
+    }
+
     /*
      * Login test
      * Explicit wait
@@ -53,7 +71,7 @@ public class bstackdemoTest extends BasePage {
      * Complex XPath for dropdown options location x2
      */
     @Test
-    public void LoginSuccessful() {
+    public void shouldLoginSuccessfullyWithValidCredentials() {
         openPage();
         HomePage home = new HomePage(driver, wait);
         SignInPage signInPage = home.goToSignIn();
@@ -67,7 +85,7 @@ public class bstackdemoTest extends BasePage {
      * Explicit wait
      */
     @Test
-    public void LogoutSuccessful() {
+    public void shouldLogoutSuccessfullyAndReturnToSignInState() {
         openPage();
         HomePage home = new HomePage(driver, wait);
         SignInPage signInPage = home.goToSignIn();
@@ -85,7 +103,7 @@ public class bstackdemoTest extends BasePage {
      * Download a file and verify its existence
      */
     @Test
-    public void CompleteOrderProcessVerification() {
+    public void shouldCompleteOrderProcessAndDownloadInvoice() {
         openPage();
 
         HomePage home = new HomePage(driver, wait);
@@ -138,7 +156,7 @@ public class bstackdemoTest extends BasePage {
      * Radio button or checkbox test (favorite button is a toggle button)
      */
     @Test
-    public void VerifyAddToFavorites() {
+    public void shouldAddItemToFavoritesSuccessfully() {
         openPage();
 
         HomePage home = new HomePage(driver, wait);
@@ -155,45 +173,9 @@ public class bstackdemoTest extends BasePage {
         Assert.assertTrue(favorites.hasFavorites());
     }
 
-    // Page title test
-    @Test
-    public void VerifyPageTitle() {
-        openPage();
-        String expectedTitle = ConfigReader.get("page.title");
-        String actualTitle = driver.getTitle();
-
-        Assert.assertEquals(expectedTitle, actualTitle);
-    }
-
-    // Static page test
-    @Test
-    public void VerifyVisibilityOfSignInLinkOnHomePage() {
-        openPage();
-        HomePage home = new HomePage(driver, wait);
-        Assert.assertTrue(isElementPresent(home.getSignInLink()));
-    }
-
-    // History test: navigate to orders, then back and verify URL (orders page
-    // requires login, so it should redirect to sign in page)
-    @Test
-    public void GoToLoginAndNavigateBackVerifyURL() {
-        openPage();
-
-        HomePage home = new HomePage(driver, wait);
-
-        home.goToOrders();
-
-        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("signin.url")));
-        Assert.assertTrue(ConfigReader.get("signin.url").equals(driver.getCurrentUrl()));
-        driver.navigate().back();
-
-        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("base.url")));
-        Assert.assertTrue(ConfigReader.get("base.url").equals(driver.getCurrentUrl()));
-    }
-
     // JavaScript executor test
     @Test
-    public void ScrollToFooterOnEmptyFavoritesAndVerifyItsVisibility() {
+    public void shouldScrollToFooterAndVerifyVisibilityOnFavoritesPage() {
         openPage();
         HomePage home = new HomePage(driver, wait);
         home.goToSignIn().login(ConfigReader.get("username"), ConfigReader.get("password"));
@@ -218,7 +200,7 @@ public class bstackdemoTest extends BasePage {
      * Complex XPath x1
      */
     @Test
-    public void HoverChangesAddToCartButtonColor() {
+    public void shouldChangeAddToCartButtonColorOnHover() {
         openPage();
 
         WebElement shelfItem = find(By.xpath("//div[@class='shelf-item' and @data-sku]"));
@@ -238,7 +220,7 @@ public class bstackdemoTest extends BasePage {
      * JavaScript executor test
      */
     @Test
-    public void SaveUserNameToCookiesAndReloadThenDeleteCookies() {
+    public void shouldPersistUserSessionUsingCookiesAndSessionStorage() {
         openPage();
 
         Cookie testCookie = new Cookie.Builder("test-user", "demouser")
@@ -268,7 +250,7 @@ public class bstackdemoTest extends BasePage {
      * Complex XPath x1
      */
     @Test
-    public void VerifyGeolocationIsNeededForOffers() {
+    public void shouldDisplayLocationBasedOffersMessage() {
         openPage();
 
         HomePage home = new HomePage(driver, wait);
@@ -285,6 +267,24 @@ public class bstackdemoTest extends BasePage {
         Assert.assertTrue(
                 offerText.equals("Sorry we do not have any promotional offers in your city.")
                         || offerText.equals("We've promotional offers in your location."));
+    }
+
+    // History test: navigate to orders, then back and verify URL (orders page
+    // requires login, so it should redirect to sign in page)
+    @Test
+    public void shouldRedirectTOLoginWhenAccessingOrdersAndAllowBackNavigation() {
+        openPage();
+
+        HomePage home = new HomePage(driver, wait);
+
+        home.goToOrders();
+
+        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("signin.url")));
+        Assert.assertTrue(ConfigReader.get("signin.url").equals(driver.getCurrentUrl()));
+        driver.navigate().back();
+
+        wait.until(ExpectedConditions.urlToBe(ConfigReader.get("base.url")));
+        Assert.assertTrue(ConfigReader.get("base.url").equals(driver.getCurrentUrl()));
     }
 
     @After

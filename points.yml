@@ -20,7 +20,7 @@ student:
 ai_usage:
   used: true
   tools: "Claude, ChatGPT"
-  description: "Used both to find a website not on the taken websites list that can be used for testing and calculating maximum achievable points based on the WUT"
+  description: "Used both to find a website not on the taken websites list that can be used for testing and calculating maximum achievable points based on the WUT. Used Claude to ask questions and find relevant information based on the documentations linked or when I encountered a long stacktrace, no code generation was used. I also used ChatGPT to help me understand some of the concepts of Selenium testing I couldn't grasp from the videos and documentation fully."
 
 # ----------------------------------------------------------
 # Quality requirements (gatekeepers)
